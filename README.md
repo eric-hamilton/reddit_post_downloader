@@ -22,7 +22,28 @@ In testing, I decided I needed a Chrome extension to help grab links from Reddit
 
 ## Installation <a id="installation"></a>
 Python >=3.9 is required
+
 ### Reddit Post Downloader command-line utility <a id="command_line_tool"></a>
+#### Option 1: Cloning the Repo and installing the tool.
+- Step 1: Open a terminal or command prompt.
+- Step 2: Change to the directory where you'd like to store the Reddit Post Downloader tool.
+- Step 3: Clone the repository using the following command:
+
+  ```
+  git clone https://github.com/eric_hamilton/reddit_post_downloader.git
+  ```
+
+- step 4: Extract the .zip file and enter the repository directory.
+- step 5: Install the requirements for the utility unsing:
+
+  ```
+  python setup.py install
+  ```
+- Finished. This will add the Reddit Post Downloader to your system path and it will be runnable using the `rdu` command.
+
+#### Option 2: Download the release package
+Under releases, grab the zip
+
 ### Reddit Link Grabber Chrome browser extension (optional) <a id="browser_extension"></a>
 
 ## How to Use <a id="how_to_use"></a>
