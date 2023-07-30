@@ -1,0 +1,10 @@
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+
+chromedriver.exe
+
+venv/
+test/

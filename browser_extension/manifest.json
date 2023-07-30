@@ -1,0 +1,24 @@
+{
+    "manifest_version": 3,
+    "name": "Reddit Link Grabber",
+    "description": "A tool to grab links to Reddit posts on a given page.",
+    "version": "0.1.0",
+    "icons": {
+        "16": "icons/icon_16.png",
+        "48": "icons/icon_48.png",
+        "128": "icons/icon_128.png"
+    },
+    "action": {},
+    "permissions": [
+      "activeTab",
+      "scripting",
+      "contextMenus"
+    ],
+    "host_permissions": [
+        "*://*/*"
+    ],
+    "background": {
+        "service_worker": "service-worker.js"
+    },
+    "content_scripts": []
+}

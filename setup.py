@@ -1,0 +1,53 @@
+from setuptools import setup, find_packages
+
+setup(
+    name='Reddit Post Downloader',
+    version='0.1.0',
+    description='A web scraper-based python Reddit post downloader.',
+    author='Eric Hamilton',
+    author_email='erickenneth91@gmail.com',
+    url='https://github.com/eric-hamilton/reddit_post_downloader',
+    packages=find_packages(),
+    install_requires = [
+        'attrs==23.1.0',
+        'certifi==2023.7.22',
+        'cffi==1.15.1',
+        'charset-normalizer==3.2.0',
+        'chromedriver-autoinstaller==0.4.0',
+        'colorama==0.4.6',
+        'decorator==4.4.2',
+        'exceptiongroup==1.1.2',
+        'h11==0.14.0',
+        'idna==3.4',
+        'imageio==2.31.1',
+        'imageio-ffmpeg==0.4.8',
+        'moviepy==1.0.3',
+        'numpy==1.25.1',
+        'outcome==1.2.0',
+        'Pillow==10.0.0',
+        'proglog==0.1.10',
+        'pycparser==2.21',
+        'pyperclip==1.8.2',
+        'PySocks==1.7.1',
+        'requests==2.31.0',
+        'selenium==4.10.0',
+        'sniffio==1.3.0',
+        'sortedcontainers==2.4.0',
+        'tqdm==4.65.0',
+        'trio==0.22.2',
+        'trio-websocket==0.10.3',
+        'urllib3==2.0.4',
+        'wsproto==1.2.0',
+    ],
+    entry_points={
+        'console_scripts': [
+            'rpd = reddit_post_downloader.reddit_post_downloader:main'
+        ],
+    },
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.11',
+    ],
+)
