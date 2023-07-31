@@ -14,3 +14,4 @@ chromedriver.exe
 # Build and test stuff 
 venv/
 test/
+release/
