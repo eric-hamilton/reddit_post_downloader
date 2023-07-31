@@ -44,7 +44,11 @@ Python >=3.9 is required
 - Finished. This will add the Reddit Post Downloader to your system path and it will be runnable using the `rdu` command.
 
 #### Option 2: Download the release package
-Under releases, grab the zip
+  - Under releases, grab the latest 'reddit_post_downloader.exe'
+  - Feel free to verify the executable using the provided 'reddit_post_downloader.sha256'
+  - Navigate to the directory with the executable and open a command prompt or terminal
+  - Use the executable just like the command line tool, just use `reddit_post_downloader.exe` instead of `rdu`
+  - For more examples, see [How to Use Command-Line Tool](#command_line_how_to)
 
 ### Reddit Link Grabber Chrome browser extension (optional) <a id="browser_extension"></a>
 
