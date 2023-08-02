@@ -229,11 +229,12 @@ def get_posts(subreddit, driver, limit, sort_category, sort_range):
             post_data_list.extend(new_post_data)
 
             current_count = len(post_data_list)
-            if current_count >= limit:
-                post_data_list = post_data_list[:limit]
-                driver.quit()
-                print(f"{limit} posts found! Saving...")
-                return post_data_list 
+            if limit != 0:
+                if current_count >= limit:
+                    post_data_list = post_data_list[:limit]
+                    driver.quit()
+                    print(f"{len(post_data_list)} posts found! Saving...")
+                    return post_data_list 
                 
             if current_count == last_count:
                 # Increment this count for each page that is checked where no new data is grabbed
@@ -253,7 +254,7 @@ def get_posts(subreddit, driver, limit, sort_category, sort_range):
             searching = False
 
     driver.quit()
-
+    print(f"{len(post_data_list)} posts found! Saving...")
     return post_data_list
 
 def validate_args(args):
@@ -277,7 +278,7 @@ def main():
             choices=['new', 'hot', 'rising', 'controversial', 'top'],
             default="top", help="What category to search subreddit posts by")
             
-    parser.add_argument("-l", "--limit", type=int, default=10, help="The limit of top posts to download")
+    parser.add_argument("-l", "--limit", type=int, default=10, help="The limit of top posts to download (0 == no limit)")
     parser.add_argument("-o", "--output", default="output", help="The output folder path")
     
     args = parser.parse_args()
