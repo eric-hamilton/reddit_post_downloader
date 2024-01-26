@@ -1,6 +1,6 @@
 function grabRedditLinks(clearClipboard = true) {
   var currentUrl = window.location.href;
-  var regex = /https:\/\/www\.reddit\.com\/r\/([^/]+)\/comments\/([^/]+)\/([^/]+)\/(?!comment\/)/g;
+  var regex = /https:\/\/(old|www)\.reddit\.com\/(r|user)\/([^/]+)\/comments\/([^/]+)\/([^/]+)\/(?!comment\/)/g;
 
   var links = document.querySelectorAll('a[href*="/comments"]');
   var matchedLinks = new Set();
