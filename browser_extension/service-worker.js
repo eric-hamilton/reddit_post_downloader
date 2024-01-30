@@ -13,15 +13,15 @@ function grabRedditLinks(clearClipboard = true) {
       var linkUrl = match[0].split('?')[0];
       matchedLinks.add(linkUrl);
     }
-    
+
     if (regex.exec(currentUrl)) {
       matchedLinks.add(currentUrl);
     }
-    
+
   });
 
   if (clearClipboard) {
-      
+
     var uniqueLinksArray = Array.from(matchedLinks);
     navigator.clipboard.writeText(uniqueLinksArray.join('\n'))
       .then(() => {
@@ -32,17 +32,17 @@ function grabRedditLinks(clearClipboard = true) {
         console.error('Failed to copy links to clipboard:', error);
         alert("An error occurred while copying links.");
       });
-      
+
   } else {
-      
+
     navigator.clipboard.readText().then((clipboardContents) => {
-        
+
       var existingLinks = new Set(clipboardContents.split("\n"));
-      
+
       matchedLinks.forEach(link => existingLinks.add(link));
-      
+
       var updatedClipboardContents = Array.from(existingLinks).join('\n');
-      
+
       navigator.clipboard.writeText(updatedClipboardContents)
         .then(() => {
           console.log('Links appended to clipboard!');
@@ -61,7 +61,7 @@ function grabRedditLinks(clearClipboard = true) {
 
 function grabSingleLink(linkUrl, clearClipboard = true) {
   var regex = /https:\/\/www\.reddit\.com\/r\/([^/]+)\/comments\/([^/]+)\/([^/]+)\/(?!comment\/)/g;
-  
+
   var match = regex.exec(linkUrl);
   if (match) {
      linkUrl = match[0].split('?')[0];
@@ -101,9 +101,9 @@ function grabSingleLink(linkUrl, clearClipboard = true) {
 
 
 function manageContextMenus(info, tab) {
-    
+
   switch (info.menuItemId) {
-      
+
     case 'pageLinkGrabberAppend':
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
@@ -112,7 +112,7 @@ function manageContextMenus(info, tab) {
       });
       console.log('pageLinkGrabberAppend');
       break;
-      
+
     case 'pageLinkGrabberOverwrite':
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
@@ -121,7 +121,7 @@ function manageContextMenus(info, tab) {
       });
       console.log('pageLinkGrabberOverwrite');
       break;
-    
+
     case 'linkGrabberAppend':
       var linkUrl = info.linkUrl
       console.log(linkUrl);
@@ -132,7 +132,7 @@ function manageContextMenus(info, tab) {
       });
       console.log('linkGrabberAppend');
       break;
-    
+
     case 'linkGrabberOverwrite':
       var linkUrl = info.linkUrl
       console.log(linkUrl);
@@ -161,19 +161,19 @@ chrome.runtime.onInstalled.addListener(function () {
     id: 'pageLinkGrabberAppend',
     contexts: ["page"]
   });
-  
+
   chrome.contextMenus.create({
     title: 'Clear clipboard and add all page links',
     id: 'pageLinkGrabberOverwrite',
     contexts: ["page"]
   });
-  
+
   chrome.contextMenus.create({
     title: 'Add post link to clipboard',
     id: 'linkGrabberAppend',
     contexts: ["link", "image", "video"]
   });
-  
+
   chrome.contextMenus.create({
     title: 'Clear the clipboard and add this link',
     id: 'linkGrabberOverwrite',
