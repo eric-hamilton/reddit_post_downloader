@@ -32,7 +32,7 @@ def sanitize_filename(filename):
 
 
 def is_valid_reddit_link(link):
-    reddit_link_pattern = r'https?://(?:www\.)?reddit\.com/r/[a-zA-Z0-9_]+/comments/[a-zA-Z0-9_]+/?'    
+    reddit_link_pattern = r'https?://(?:www\.)?reddit\.com/r/[a-zA-Z0-9_]+/comments/[a-zA-Z0-9_]+/?'
     return re.match(reddit_link_pattern, link)
 
 
@@ -90,7 +90,7 @@ def merge_video_and_audio(vid_link, aud_link, output_filename):
         audio_clip = None
 
         try:
-            # The audio link is programatically generated because reddit doesn't provide one.
+            # The audio link is programmatically generated because reddit doesn't provide one.
             # Some videos don't have audio. Just try/error through it.
             if aud_link:
                 audio_clip = AudioFileClip(aud_link)
@@ -109,13 +109,13 @@ def merge_video_and_audio(vid_link, aud_link, output_filename):
         # Unnecessarily convoluted way of avoiding duplicate filenames
         try:
             os.rename(temp_video_file, output_filename)
-        except FileExistsError as e:
+        except FileExistsError:
             suffix = 1
             while True:
                 new_output_filename = f"{output_filename}_({suffix}))"
                 try:
                     os.rename(temp_video_file, new_output_filename)
-                    break 
+                    break
                 except FileExistsError:
                     suffix += 1
 
@@ -124,14 +124,13 @@ def merge_video_and_audio(vid_link, aud_link, output_filename):
 
 
 def save_post(post_data, base_output_folder):
-
     # take the sub and post names from the permalink because it's more nicely formatted
     link_parts = post_data['permalink'].split("/")
     subreddit_name = link_parts[2]
     post_id = link_parts[4]
     post_title = link_parts[5]
 
-    output_directory = os.path.join(base_output_folder, subreddit_name, post_id+"_"+post_title)
+    output_directory = os.path.join(base_output_folder, subreddit_name, post_id + "_" + post_title)
     os.makedirs(output_directory, exist_ok=True)
 
     if post_data["is_video"]:
@@ -153,7 +152,7 @@ def save_post(post_data, base_output_folder):
     metadata = post_data.get("media_metadata")
     if metadata:
         for i, x in enumerate(metadata):
-            output_filename = f"{post_title}_{i+1}.jpg"
+            output_filename = f"{post_title}_{i + 1}.jpg"
             output_filename = sanitize_filename(output_filename)
             output_path = os.path.join(output_directory, output_filename)
             image_url = metadata[x]["s"]["u"]
@@ -164,8 +163,8 @@ def save_post(post_data, base_output_folder):
             if response.status_code == 200:
                 with open(output_path, 'wb') as file:
                     file.write(response.content)
-                print(f"Image {i+1} of {len(metadata)} downloaded successfully.")
-                time.sleep(0.5) # avoid rate limiting
+                print(f"Image {i + 1} of {len(metadata)} downloaded successfully.")
+                time.sleep(0.5)  # avoid rate limiting
             else:
                 print(response.status_code)
                 print(f"{output_filename} failed to download")
@@ -176,7 +175,7 @@ def save_post(post_data, base_output_folder):
         images = preview.get("images")
         if images:
             for i, image in enumerate(images):
-                output_filename = f"{post_title}_{i+1}.jpg"
+                output_filename = f"{post_title}_{i + 1}.jpg"
                 output_filename = sanitize_filename(output_filename)
                 output_path = os.path.join(output_directory, output_filename)
                 image_url = image["source"]["url"].replace('&amp;', '&')
@@ -185,12 +184,12 @@ def save_post(post_data, base_output_folder):
                 if response.status_code == 200:
                     with open(output_path, 'wb') as file:
                         file.write(response.content)
-                    print(f"Image {i+1} of {len(images)} downloaded successfully.")
-                    time.sleep(0.5) # avoid rate limiting
+                    print(f"Image {i + 1} of {len(images)} downloaded successfully.")
+                    time.sleep(0.5)  # avoid rate limiting
                 else:
                     print(response.status_code)
                     print(f"{output_filename} failed to download")
-            
+
 
 def get_posts_on_page(page_data):
     post_data_list = []
@@ -208,9 +207,9 @@ def get_posts(subreddit, driver, limit, sort_category, sort_range):
     searching = True
     fail_count = 0
     fail_limit = 5
-    sleep_time = 5 # seconds
+    sleep_time = 5  # seconds
     last_count = len(post_data_list)
-    after_id = None # How reddit API handles pagination
+    after_id = None  # How reddit API handles pagination
 
     while searching:
         try:
@@ -236,7 +235,7 @@ def get_posts(subreddit, driver, limit, sort_category, sort_range):
                     post_data_list = post_data_list[:limit]
                     driver.quit()
                     print(f"{len(post_data_list)} posts found! Saving...")
-                    return post_data_list 
+                    return post_data_list
 
             if current_count == last_count:
                 # Increment this count for each page that is checked where no new data is grabbed
@@ -267,21 +266,24 @@ def validate_args(args):
     elif arg_count == 0:
         raise argparse.ArgumentTypeError("Missing download argument: (-s, -p, -f, or -w required)")
 
+
 def main():
     parser = argparse.ArgumentParser(description="Download Reddit posts.")
     parser.add_argument("-s", "--subreddit", required=False, help="Get the top posts of a subreddit")
     parser.add_argument("-p", "--post", help="Download a single post by providing its permalink")
     parser.add_argument("-f", "--file", help="Provide a text file of links to download")
-    parser.add_argument("-w", "--web", action="store_true", help="Download a list of links copied via Reddit Link Grabber")
+    parser.add_argument("-w", "--web", action="store_true",
+                        help="Download a list of links copied via Reddit Link Grabber")
     parser.add_argument("-r", "--range",
-            choices=['hour', 'day', 'week', 'month', 'year', 'all'],
-            default="all", help="What range to search subreddit posts by")
+                        choices=['hour', 'day', 'week', 'month', 'year', 'all'],
+                        default="all", help="What range to search subreddit posts by")
 
     parser.add_argument("-c", "--category",
-            choices=['new', 'hot', 'rising', 'controversial', 'top'],
-            default="top", help="What category to search subreddit posts by")
+                        choices=['new', 'hot', 'rising', 'controversial', 'top'],
+                        default="top", help="What category to search subreddit posts by")
 
-    parser.add_argument("-l", "--limit", type=int, default=10, help="The limit of top posts to download (0 == no limit)")
+    parser.add_argument("-l", "--limit", type=int, default=10,
+                        help="The limit of top posts to download (0 == no limit)")
     parser.add_argument("-o", "--output", default="output", help="The output folder path")
 
     args = parser.parse_args()
@@ -297,14 +299,14 @@ def main():
         try:
             post_url = args.post
             if ".json" not in post_url:
-                post_url = post_url+".json"
+                post_url = post_url + ".json"
             driver.get(post_url)
             data_str = driver.find_element(By.TAG_NAME, 'pre').text
             data = json.loads(data_str)[0]
             post_data = data["data"]["children"][0]["data"]
             save_post(post_data, args.output)
 
-        except Exception as e:
+        except Exception:
             traceback.print_exc()
             print("Failed to download the post.")
 
@@ -314,14 +316,14 @@ def main():
         if valid_links:
             for link in valid_links:
                 try:
-                    post_url = link+".json"
+                    post_url = link + ".json"
                     driver.get(post_url)
                     data_str = driver.find_element(By.TAG_NAME, 'pre').text
                     data = json.loads(data_str)[0]
                     post_data = data["data"]["children"][0]["data"]
                     save_post(post_data, args.output)
 
-                except Exception as e:
+                except Exception:
                     traceback.print_exc()
                     print("Failed to download the post.")
 
@@ -335,14 +337,14 @@ def main():
         if valid_links:
             for link in valid_links:
                 try:
-                    post_url = link+".json"
+                    post_url = link + ".json"
                     driver.get(post_url)
                     data_str = driver.find_element(By.TAG_NAME, 'pre').text
                     data = json.loads(data_str)[0]
                     post_data = data["data"]["children"][0]["data"]
                     save_post(post_data, args.output)
 
-                except Exception as e:
+                except Exception:
                     traceback.print_exc()
                     print("Failed to download the post.")
 
@@ -355,9 +357,9 @@ def main():
 
         for i, post_data in enumerate(post_data_list):
             try:
-                print(f"\nSaving post {i+1} out of {len(post_data_list)}.\n")
+                print(f"\nSaving post {i + 1} out of {len(post_data_list)}.\n")
                 save_post(post_data, args.output)
-            except Exception as e:
+            except Exception:
                 traceback.print_exc()
                 print(f"Failed to download {post_data['permalink']}")
 
