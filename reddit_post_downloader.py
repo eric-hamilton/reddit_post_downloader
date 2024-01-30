@@ -32,7 +32,8 @@ def sanitize_filename(filename):
 
 
 def is_valid_reddit_link(link):
-    reddit_link_pattern = r'https?://(?:www\.)?reddit\.com/r/[a-zA-Z0-9_]+/comments/[a-zA-Z0-9_]+/?'
+    reddit_link_pattern = r'https?://(?:(old|www)\.)?reddit\.com/(r|user)/[a-zA-Z0-9_]+/comments/[a-zA-Z0-9_]+/?'
+
     return re.match(reddit_link_pattern, link)
 
 
