@@ -1,6 +1,6 @@
 function grabRedditLinks(clearClipboard = true) {
   var currentUrl = window.location.href;
-  var regex = /https:\/\/(old|www)\.reddit\.com\/(r|user)\/([^/]+)\/comments\/([^/]+)\/([^/]+)\/(?!comment\/)/g;
+  var regex = /https?:\/\/(?:(old|www)\.)?reddit\.com\/(r|user)\/([^/]+)\/comments\/([^/]+)\/([^/]+)\/(?!comment\/)/g;
 
   var links = document.querySelectorAll('a[href*="/comments"]');
   var matchedLinks = new Set();
@@ -60,7 +60,7 @@ function grabRedditLinks(clearClipboard = true) {
 }
 
 function grabSingleLink(linkUrl, clearClipboard = true) {
-  var regex = /https:\/\/(old|www)\.reddit\.com\/(r|user)\/([^/]+)\/comments\/([^/]+)\/([^/]+)\/(?!comment\/)/g;
+  var regex = /https?:\/\/(?:(old|www)\.)?reddit\.com\/(r|user)\/([^/]+)\/comments\/([^/]+)\/([^/]+)\/(?!comment\/)/g;
   
   var match = regex.exec(linkUrl);
   if (match) {
