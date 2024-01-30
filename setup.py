@@ -8,7 +8,7 @@ setup(
     author_email='erickenneth91@gmail.com',
     url='https://github.com/eric-hamilton/reddit_post_downloader',
     packages=find_packages(),
-    install_requires = [
+    install_requires=[
         'attrs==23.1.0',
         'certifi==2023.7.22',
         'cffi==1.15.1',
