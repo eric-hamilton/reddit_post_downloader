@@ -60,7 +60,7 @@ function grabRedditLinks(clearClipboard = true) {
 }
 
 function grabSingleLink(linkUrl, clearClipboard = true) {
-  var regex = /https:\/\/www\.reddit\.com\/r\/([^/]+)\/comments\/([^/]+)\/([^/]+)\/(?!comment\/)/g;
+  var regex = /https:\/\/(old|www)\.reddit\.com\/(r|user)\/([^/]+)\/comments\/([^/]+)\/([^/]+)\/(?!comment\/)/g;
   
   var match = regex.exec(linkUrl);
   if (match) {
