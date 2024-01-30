@@ -30,9 +30,11 @@ def sanitize_filename(filename):
         sanitized_filename = sanitized_filename[:max_length]
     return sanitized_filename
 
+
 def is_valid_reddit_link(link):
     reddit_link_pattern = r'https?://(?:www\.)?reddit\.com/r/[a-zA-Z0-9_]+/comments/[a-zA-Z0-9_]+/?'    
     return re.match(reddit_link_pattern, link)
+
 
 def verify_reddit_links_in_clipboard(clipboard_content):
     if not clipboard_content:
@@ -45,7 +47,8 @@ def verify_reddit_links_in_clipboard(clipboard_content):
         else:
             valid_links.add(link)
     return valid_links
-    
+
+
 def verify_reddit_links_in_file(file_path):
     if not os.path.isfile(file_path):
         return False
@@ -59,6 +62,7 @@ def verify_reddit_links_in_file(file_path):
                 valid_links.add(link)
 
     return valid_links
+
 
 def find_key_recursively(data, target_key):
     if isinstance(data, dict):
@@ -75,8 +79,8 @@ def find_key_recursively(data, target_key):
             if result is not None:
                 return result
     return None
-    
-    
+
+
 def merge_video_and_audio(vid_link, aud_link, output_filename):
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_video_file = os.path.join(temp_dir, 'temp_video.mp4')
@@ -101,7 +105,7 @@ def merge_video_and_audio(vid_link, aud_link, output_filename):
             final_clip = video_clip
 
         final_clip.write_videofile(temp_video_file, codec="libx264", verbose=False)
-        
+
         # Unnecessarily convoluted way of avoiding duplicate filenames
         try:
             os.rename(temp_video_file, output_filename)
@@ -114,38 +118,36 @@ def merge_video_and_audio(vid_link, aud_link, output_filename):
                     break 
                 except FileExistsError:
                     suffix += 1
-                    
+
         if os.path.exists(temp_audio_file):
             os.remove(temp_audio_file)
-            
-            
+
+
 def save_post(post_data, base_output_folder):
-    
+
     # take the sub and post names from the permalink because it's more nicely formatted
     link_parts = post_data['permalink'].split("/")
     subreddit_name = link_parts[2]
     post_id = link_parts[4]
     post_title = link_parts[5]
-    
+
     output_directory = os.path.join(base_output_folder, subreddit_name, post_id+"_"+post_title)
     os.makedirs(output_directory, exist_ok=True)
-    
-    
-    if post_data["is_video"]:
 
+    if post_data["is_video"]:
         media_link = find_key_recursively(post_data, "fallback_url")
         if media_link:
             media_link = media_link.replace("?source=fallback", "")
         else:
             media_link = ""
-        
+
         if media_link.lower().endswith(".mp4"):
             audio_pattern = r"DASH_.*?\.mp4"
             audio_link = re.sub(audio_pattern, "DASH_audio.mp4", media_link)
-            
+
             filename = sanitize_filename(f"{post_title}.mp4")
-            ouput_path = os.path.join(output_directory, filename)
-            merge_video_and_audio(media_link, audio_link, ouput_path)
+            output_path = os.path.join(output_directory, filename)
+            merge_video_and_audio(media_link, audio_link, output_path)
             return
 
     metadata = post_data.get("media_metadata")
@@ -153,14 +155,14 @@ def save_post(post_data, base_output_folder):
         for i, x in enumerate(metadata):
             output_filename = f"{post_title}_{i+1}.jpg"
             output_filename = sanitize_filename(output_filename)
-            ouput_path = os.path.join(output_directory, output_filename)
+            output_path = os.path.join(output_directory, output_filename)
             image_url = metadata[x]["s"]["u"]
-            
+
             image_url = image_url.replace('&amp;', '&')
             response = requests.get(image_url)
-            
+
             if response.status_code == 200:
-                with open(ouput_path, 'wb') as file:
+                with open(output_path, 'wb') as file:
                     file.write(response.content)
                 print(f"Image {i+1} of {len(metadata)} downloaded successfully.")
                 time.sleep(0.5) # avoid rate limiting
@@ -168,8 +170,7 @@ def save_post(post_data, base_output_folder):
                 print(response.status_code)
                 print(f"{output_filename} failed to download")
         return
-                
-            
+
     preview = post_data.get("preview")
     if preview:
         images = preview.get("images")
@@ -177,12 +178,12 @@ def save_post(post_data, base_output_folder):
             for i, image in enumerate(images):
                 output_filename = f"{post_title}_{i+1}.jpg"
                 output_filename = sanitize_filename(output_filename)
-                ouput_path = os.path.join(output_directory, output_filename)
+                output_path = os.path.join(output_directory, output_filename)
                 image_url = image["source"]["url"].replace('&amp;', '&')
                 response = requests.get(image_url)
-                
+
                 if response.status_code == 200:
-                    with open(ouput_path, 'wb') as file:
+                    with open(output_path, 'wb') as file:
                         file.write(response.content)
                     print(f"Image {i+1} of {len(images)} downloaded successfully.")
                     time.sleep(0.5) # avoid rate limiting
@@ -197,6 +198,7 @@ def get_posts_on_page(page_data):
         post_data_list.append(child["data"])
     last_id = page_data.get("after")
     return post_data_list, last_id
+
 
 def get_posts(subreddit, driver, limit, sort_category, sort_range):
     post_data_list = []
@@ -235,13 +237,13 @@ def get_posts(subreddit, driver, limit, sort_category, sort_range):
                     driver.quit()
                     print(f"{len(post_data_list)} posts found! Saving...")
                     return post_data_list 
-                
+
             if current_count == last_count:
                 # Increment this count for each page that is checked where no new data is grabbed
                 # Can occur when subreddit doesn't have as many posts as the set limit
                 fail_count += 1
                 print(f"Failed to find new posts: {fail_count}/{fail_limit}")
-                
+
             if fail_count > fail_limit:
                 searching = False
             else:
@@ -256,6 +258,7 @@ def get_posts(subreddit, driver, limit, sort_category, sort_range):
     driver.quit()
     print(f"{len(post_data_list)} posts found! Saving...")
     return post_data_list
+
 
 def validate_args(args):
     arg_count = sum(arg is not None and arg is not False for arg in [args.subreddit, args.post, args.file, args.web])
@@ -273,17 +276,17 @@ def main():
     parser.add_argument("-r", "--range",
             choices=['hour', 'day', 'week', 'month', 'year', 'all'],
             default="all", help="What range to search subreddit posts by")
-            
+
     parser.add_argument("-c", "--category",
             choices=['new', 'hot', 'rising', 'controversial', 'top'],
             default="top", help="What category to search subreddit posts by")
-            
+
     parser.add_argument("-l", "--limit", type=int, default=10, help="The limit of top posts to download (0 == no limit)")
     parser.add_argument("-o", "--output", default="output", help="The output folder path")
-    
+
     args = parser.parse_args()
     validate_args(args)
-        
+
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
@@ -300,11 +303,11 @@ def main():
             data = json.loads(data_str)[0]
             post_data = data["data"]["children"][0]["data"]
             save_post(post_data, args.output)
-            
+
         except Exception as e:
             traceback.print_exc()
             print("Failed to download the post.")
-    
+
     elif args.file:
         file_path = args.file
         valid_links = verify_reddit_links_in_file(file_path)
@@ -317,15 +320,15 @@ def main():
                     data = json.loads(data_str)[0]
                     post_data = data["data"]["children"][0]["data"]
                     save_post(post_data, args.output)
-                    
+
                 except Exception as e:
                     traceback.print_exc()
                     print("Failed to download the post.")
-                
+
         else:
             print("Invalid link found or no links given")
             print("link file should be one link per line with no extra characters")
-    
+
     elif args.web:
         clipboard_content = pyperclip.paste()
         valid_links = verify_reddit_links_in_clipboard(clipboard_content)
@@ -338,15 +341,15 @@ def main():
                     data = json.loads(data_str)[0]
                     post_data = data["data"]["children"][0]["data"]
                     save_post(post_data, args.output)
-                    
+
                 except Exception as e:
                     traceback.print_exc()
                     print("Failed to download the post.")
-                
+
         else:
             print("Invalid link found or no links found in clipboard")
             print("Clipboard should contain one reddit link per line")
-            
+
     elif args.subreddit:
         post_data_list = get_posts(args.subreddit, driver, args.limit, args.category, args.range)
 
@@ -358,7 +361,7 @@ def main():
                 traceback.print_exc()
                 print(f"Failed to download {post_data['permalink']}")
 
+
 if __name__ == "__main__":
     main()
     print("Finished!")
-    
